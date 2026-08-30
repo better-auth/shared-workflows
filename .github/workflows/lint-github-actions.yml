@@ -2,11 +2,6 @@ name: Lint GitHub Actions
 
 on:
   workflow_call:
-    inputs:
-      advanced-security:
-        description: Upload zizmor findings to GitHub Code Scanning
-        type: boolean
-        default: false
 
 permissions: {}
 
@@ -34,38 +29,3 @@ jobs:
 
       - name: Check workflows
         run: ./actionlint -color -ignore 'unexpected key "queue"'
-
-  zizmor:
-    if: inputs.advanced-security == false
-    runs-on: ubuntu-latest
-    permissions:
-      actions: read
-      contents: read
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-
-      - name: Run zizmor
-        uses: zizmorcore/zizmor-action@3dc1ecc9bcb9e94e9b2c709687979e1298497054 # v0.6.2
-        with:
-          advanced-security: false
-          version: v1.29.0
-
-  zizmor-code-scanning:
-    if: inputs.advanced-security
-    runs-on: ubuntu-latest
-    permissions:
-      actions: read
-      contents: read
-      security-events: write
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-
-      - name: Run zizmor
-        uses: zizmorcore/zizmor-action@3dc1ecc9bcb9e94e9b2c709687979e1298497054 # v0.6.2
-        with:
-          advanced-security: true
-          version: v1.29.0

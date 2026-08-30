@@ -64,9 +64,7 @@ jobs:
 
 ## `lint-github-actions.yml`
 
-Validates GitHub Actions workflows with actionlint, ShellCheck, and zizmor.
-
-By default, zizmor findings fail the job. Advanced Security mode uploads findings to GitHub Code Scanning and relies on repository rulesets for enforcement.
+Validates GitHub Actions workflows with actionlint and ShellCheck.
 
 ```yaml
 name: Lint GitHub Actions
@@ -81,21 +79,50 @@ permissions: {}
 jobs:
   lint:
     permissions:
-      actions: read
       contents: read
     uses: better-auth/shared-workflows/.github/workflows/lint-github-actions.yml@<commit-sha>
 ```
 
-Enable GitHub Code Scanning for a public repository or one with GitHub Code Security:
+## `zizmor.yml`
+
+Runs zizmor in read-only blocking mode without GitHub Code Scanning.
 
 ```yaml
+name: Zizmor
+
+on:
+  pull_request:
+
+permissions: {}
+
 jobs:
-  lint:
+  zizmor:
+    permissions:
+      actions: read
+      contents: read
+    uses: better-auth/shared-workflows/.github/workflows/zizmor.yml@<commit-sha>
+```
+
+## `zizmor-code-scanning.yml`
+
+Uploads zizmor findings to GitHub Code Scanning. Repository rulesets determine whether findings block merges.
+
+```yaml
+name: Zizmor Code Scanning
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions: {}
+
+jobs:
+  zizmor:
+    if: github.event_name == 'push' || !github.event.pull_request.head.repo.fork
     permissions:
       actions: read
       contents: read
       security-events: write
-    uses: better-auth/shared-workflows/.github/workflows/lint-github-actions.yml@<commit-sha>
-    with:
-      advanced-security: true
+    uses: better-auth/shared-workflows/.github/workflows/zizmor-code-scanning.yml@<commit-sha>
 ```
