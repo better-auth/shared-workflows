@@ -2,9 +2,9 @@
 
 Reusable GitHub Actions workflows for Better Auth repositories.
 
-## Release libraries with bumpp
+## `release-bumpp-library.yml`
 
-`release-bumpp-library.yml` publishes packages from a pnpm project when a bumpp release pull request is merged.
+Publishes packages from a pnpm project when a bumpp release pull request is merged.
 
 The calling repository must export its release branch and npm tag from `bump.config.ts`:
 
