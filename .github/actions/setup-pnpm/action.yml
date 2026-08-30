@@ -1,0 +1,43 @@
+name: Setup pnpm
+description: Set up Node.js and pnpm, then install locked dependencies
+
+inputs:
+  node-version:
+    description: Node.js version to use instead of node-version-file
+    required: false
+    default: ""
+  node-version-file:
+    description: File containing the Node.js version
+    default: .nvmrc
+
+runs:
+  using: composite
+  steps:
+    - name: Read Node.js version
+      id: node
+      shell: bash
+      env:
+        NODE_VERSION: ${{ inputs.node-version }}
+        NODE_VERSION_FILE: ${{ inputs.node-version-file }}
+      run: |
+        if [[ -z "$NODE_VERSION" ]]; then
+          if [[ ! -f "$NODE_VERSION_FILE" ]]; then
+            echo "::error::Node.js version file not found: $NODE_VERSION_FILE"
+            exit 1
+          fi
+
+          NODE_VERSION=$(tr -d '[:space:]' < "$NODE_VERSION_FILE")
+        fi
+
+        if [[ ! "$NODE_VERSION" =~ ^v?[0-9]+(\.x|\.[0-9]+(\.x|\.[0-9]+)?)?$ ]]; then
+          echo "::error::Unsupported Node.js version: $NODE_VERSION"
+          exit 1
+        fi
+
+        echo "runtime=node@${NODE_VERSION#v}" >> "$GITHUB_OUTPUT"
+
+    - uses: pnpm/setup@703c52620218391530e48b9e8870d5c0082e1b9b # v2.1.0
+      with:
+        runtime: ${{ steps.node.outputs.runtime }}
+        require-lockfile: true
+        install: true

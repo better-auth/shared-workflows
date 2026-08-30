@@ -2,6 +2,28 @@
 
 Reusable GitHub Actions workflows for Better Auth repositories.
 
+## `.github/actions/setup-pnpm`
+
+Sets up Node.js and pnpm, then installs dependencies with a frozen lockfile. The pnpm store cache remains disabled.
+
+Requires pnpm 11 or newer in `packageManager`, a numeric Node.js version in `.nvmrc`, and a committed `pnpm-lock.yaml`.
+
+```yaml
+- uses: actions/checkout@<commit-sha>
+  with:
+    persist-credentials: false
+
+- uses: better-auth/shared-workflows/.github/actions/setup-pnpm@<commit-sha>
+```
+
+Set `node-version` to override `.nvmrc`, such as in a matrix job:
+
+```yaml
+- uses: better-auth/shared-workflows/.github/actions/setup-pnpm@<commit-sha>
+  with:
+    node-version: ${{ matrix.node-version }}
+```
+
 ## `release-bumpp-library.yml`
 
 Publishes packages from a pnpm project when a bumpp release pull request is merged.
