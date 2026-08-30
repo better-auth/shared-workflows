@@ -54,7 +54,7 @@ jobs:
         env:
           RELEASE_CONFIG_FILE: ${{ inputs.release-config-file }}
         run: |
-          node --no-warnings --input-type=module -e '
+          node --no-warnings --input-type=module <<'EOF' >> "$GITHUB_OUTPUT"
             import { resolve } from "node:path";
             import { pathToFileURL } from "node:url";
 
@@ -67,7 +67,7 @@ jobs:
 
             console.log(`branch=${releaseConfig.branch}`);
             console.log(`npm_tag=${releaseConfig.npmTag}`);
-          ' >> "$GITHUB_OUTPUT"
+          EOF
 
       - name: Determine release
         id: release
@@ -108,9 +108,11 @@ jobs:
             exit 1
           fi
 
-          echo "version=$PACKAGE_VERSION" >> "$GITHUB_OUTPUT"
-          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
-          echo "npm_tag=$NPM_TAG" >> "$GITHUB_OUTPUT"
+          {
+            echo "version=$PACKAGE_VERSION"
+            echo "tag=$TAG"
+            echo "npm_tag=$NPM_TAG"
+          } >> "$GITHUB_OUTPUT"
           echo "Releasing $TAG from $RELEASE_BRANCH with npm tag $NPM_TAG"
 
       - name: Build
