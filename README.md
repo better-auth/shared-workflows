@@ -61,3 +61,41 @@ jobs:
     with:
       version-file: packages/example-library/package.json
 ```
+
+## `lint-github-actions.yml`
+
+Validates GitHub Actions workflows with actionlint, ShellCheck, and zizmor.
+
+By default, zizmor findings fail the job. Advanced Security mode uploads findings to GitHub Code Scanning and relies on repository rulesets for enforcement.
+
+```yaml
+name: Lint GitHub Actions
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions: {}
+
+jobs:
+  lint:
+    permissions:
+      actions: read
+      contents: read
+    uses: better-auth/shared-workflows/.github/workflows/lint-github-actions.yml@<commit-sha>
+```
+
+Enable GitHub Code Scanning for a public repository or one with GitHub Code Security:
+
+```yaml
+jobs:
+  lint:
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    uses: better-auth/shared-workflows/.github/workflows/lint-github-actions.yml@<commit-sha>
+    with:
+      advanced-security: true
+```
